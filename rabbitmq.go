@@ -11,6 +11,7 @@ import (
 	"github.com/fsouza/go-dockerclient"
 )
 
+// RabbitMQ is the entity that conjure client can spawn.
 type RabbitMQ struct {
 	*docker.Container
 	client *Client
@@ -42,13 +43,9 @@ func (ctn *RabbitMQ) Create() error {
 		},
 	}
 
-	fmt.Printf("Client: %+v\n", ctn)
 	dockerCtn, err := ctn.client.CreateContainer(opts)
 
-	ctn = &RabbitMQ{
-		dockerCtn,
-		ctn.client,
-	}
+	ctn.Container = dockerCtn
 
 	return err
 }
