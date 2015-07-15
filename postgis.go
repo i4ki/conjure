@@ -30,7 +30,7 @@ func (ctn *PostGIS) Create() error {
 	opts := docker.CreateContainerOptions{
 		Name: "conjured-postgis-" + uuid.New()[0:6],
 		Config: &docker.Config{
-			Image: "postgis",
+			Image: "neowaylabs/postgis:latest",
 			ExposedPorts: map[docker.Port]struct{}{
 				"5432/tcp": {},
 			},
