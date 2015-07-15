@@ -37,7 +37,7 @@ func (ctn *RabbitMQ) Create() error {
 		},
 		HostConfig: &docker.HostConfig{
 			PortBindings: map[docker.Port][]docker.PortBinding{
-				"5672/tcp": []docker.PortBinding{docker.PortBinding{HostPort: "5672"}}},
+				"5672/tcp": []docker.PortBinding{docker.PortBinding{HostPort: "35672"}}},
 			PublishAllPorts: true,
 			Privileged:      false,
 		},
@@ -79,10 +79,8 @@ func (ctn *RabbitMQ) Run() error {
 		return err
 	}
 
-	// block until rabbitmq can accept connections on port 5672
-	ctn.WaitOK()
-
-	return nil
+	// block until rabbitmq can accept connections on port 35672
+	return ctn.WaitOK()
 }
 
 func (ctn *RabbitMQ) Pull() error {
@@ -111,10 +109,10 @@ func (ctn *RabbitMQ) Stop() error {
 }
 
 // WaitOK blocks until rabbitmq can accept connections on
-// localhost:5672
-func (ctn *RabbitMQ) WaitOK() {
+// <ctn ip address>:5672
+func (ctn *RabbitMQ) WaitOK() error {
 dial:
-	conn, err := net.Dial("tcp", "localhost:5672")
+	conn, err := net.Dial("tcp", "localhost:35672")
 	if err != nil {
 		time.Sleep(500 * time.Millisecond)
 		goto dial
@@ -124,10 +122,12 @@ dial:
 	_, err = bufio.NewReader(conn).ReadString('\n')
 
 	if err != nil && err.Error() != "EOF" {
-		conn.Close()
+		//conn.Close()
 		time.Sleep(500 * time.Millisecond)
 		goto dial
 	}
+
+	return nil
 }
 
 func (ctn *RabbitMQ) Remove() error {
