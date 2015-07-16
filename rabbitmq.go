@@ -79,8 +79,7 @@ func (ctn *RabbitMQ) Run() error {
 		return err
 	}
 
-	// block until rabbitmq can accept connections on port 35672
-	return ctn.WaitOK()
+	return nil
 }
 
 func (ctn *RabbitMQ) Pull() error {
@@ -110,9 +109,9 @@ func (ctn *RabbitMQ) Stop() error {
 
 // WaitOK blocks until rabbitmq can accept connections on
 // <ctn ip address>:5672
-func (ctn *RabbitMQ) WaitOK() error {
+func (ctn *RabbitMQ) WaitOK(host string) error {
 dial:
-	conn, err := net.Dial("tcp", "localhost:35672")
+	conn, err := net.Dial("tcp", host+":35672")
 	if err != nil {
 		time.Sleep(500 * time.Millisecond)
 		goto dial
