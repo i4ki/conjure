@@ -2,7 +2,6 @@ package conjure
 
 import (
 	"encoding/json"
-	"fmt"
 
 	"github.com/fsouza/go-dockerclient"
 )
@@ -44,8 +43,6 @@ func (c *Client) Run(containerSpec string) (*docker.Container, error) {
 		return nil, err
 	}
 
-	fmt.Printf("Spec: %+v\n", container)
-
 	opts := docker.CreateContainerOptions{
 		Name:       container.Name,
 		Config:     container.Config,
@@ -57,9 +54,9 @@ func (c *Client) Run(containerSpec string) (*docker.Container, error) {
 	if err != nil {
 		return nil, err
 	}
-	
+
 	err = c.StartContainer(dockerCtn.ID, nil)
-	
+
 	if err != nil {
 		return nil, err
 	}
