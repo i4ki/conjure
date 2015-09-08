@@ -60,10 +60,10 @@ create:
 				Repository: "rabbitmq",
 			}
 
-			err = docker.PullImage(pullOpts, nil)
+			err = c.PullImage(pullOpts, nil)
 
 			if err != nil {
-				return err, nil
+				return nil, err
 			}
 
 			goto create
