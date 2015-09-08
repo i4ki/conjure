@@ -60,7 +60,7 @@ create:
 				Repository: "rabbitmq",
 			}
 
-			err = c.PullImage(pullOpts, nil)
+			err = c.PullImage(pullOpts, docker.AuthConfiguration{})
 
 			if err != nil {
 				return nil, err
