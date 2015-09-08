@@ -2,7 +2,6 @@ package conjure
 
 import (
 	"encoding/json"
-	"fmt"
 
 	"github.com/fsouza/go-dockerclient"
 )
@@ -36,6 +35,8 @@ func NewClient() (*Client, error) {
 }
 
 func (c *Client) Run(containerSpec string) (*docker.Container, error) {
+	var pulled bool
+
 	container := Entity{}
 
 	err := json.Unmarshal([]byte(containerSpec), &container)
@@ -44,22 +45,35 @@ func (c *Client) Run(containerSpec string) (*docker.Container, error) {
 		return nil, err
 	}
 
-	fmt.Printf("Spec: %+v\n", container)
-
 	opts := docker.CreateContainerOptions{
 		Name:       container.Name,
 		Config:     container.Config,
 		HostConfig: container.HostConfig,
 	}
-
+create:
 	dockerCtn, err := c.CreateContainer(opts)
 
 	if err != nil {
+		if !pulled {
+			pulled = true
+			pullOpts := docker.PullImageOptions{
+				Repository: "rabbitmq",
+			}
+
+			err = docker.PullImage(pullOpts, nil)
+
+			if err != nil {
+				return err, nil
+			}
+
+			goto create
+		}
+
 		return nil, err
 	}
-	
+
 	err = c.StartContainer(dockerCtn.ID, nil)
-	
+
 	if err != nil {
 		return nil, err
 	}
